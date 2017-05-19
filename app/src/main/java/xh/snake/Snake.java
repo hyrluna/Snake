@@ -1,6 +1,7 @@
 package xh.snake;
 
 import android.graphics.Point;
+import android.graphics.PointF;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -13,36 +14,40 @@ import java.util.Set;
  */
 
 public class Snake {
-    public static final float STEP = 50;
-    public static final int PADDING = 5;
+    public static final float STEP = 60;
+    public static final int PADDING = 2;
+    public static final int MARK_HEAD = 0;
+    public static final int MARK_TAIL = 1;
     private static final float NODE_SIZE = STEP;
     private Set<Node> nodes = new HashSet<>();
     private List<Node> turnNodes = new ArrayList<>();
     private Node header;
     private Node tail;
     private SnakeView.WalkGround walkGround;
-    private Point foodPosition;
+    private PointF foodPosition;
     private boolean isAlive = true;
 
-    public Snake() {
-        init();
+    public Snake(float borderWidth) {
+        init(borderWidth);
     }
 
-    public void init() {
-        header = new Node(200, 300, Direction.TOP);
-        Node body1 = new Node(200, 300 + NODE_SIZE, header.direction);
+    public void init(float borderWidth) {
+        float x = borderWidth + STEP / 2 + 180;
+        float y = borderWidth + STEP / 2 + 600;
+        header = new Node(x, y, Direction.TOP);
+        header.setMark(MARK_HEAD);
+        Node body1 = new Node(x, y + NODE_SIZE, header.direction);
         header.next = body1;
         body1.pre = header;
-        tail = new Node(200, 300 + NODE_SIZE + NODE_SIZE, body1.direction);
+        tail = new Node(x, y + NODE_SIZE + NODE_SIZE, body1.direction);
+        tail.setMark(MARK_TAIL);
         body1.next = tail;
         tail.pre = body1;
-        addNode(new Node(200, 300 + NODE_SIZE + NODE_SIZE, -1));
-        addNode(new Node(200, 300 + NODE_SIZE*3, -1));
-        addNode(new Node(200, 300 + NODE_SIZE*4, -1));
-        addNode(new Node(200, 300 + NODE_SIZE*5, -1));
-        addNode(new Node(200, 300 + NODE_SIZE*6, -1));
-        addNode(new Node(200, 300 + NODE_SIZE*7, -1));
-        addNode(new Node(200, 300 + NODE_SIZE*8, -1));
+        addNode(new Node(x, y + NODE_SIZE + NODE_SIZE, -1));
+        addNode(new Node(x, y + NODE_SIZE*3, -1));
+        addNode(new Node(x, y + NODE_SIZE*4, -1));
+        addNode(new Node(x, y + NODE_SIZE*5, -1));
+        addNode(new Node(x, y + NODE_SIZE*6, -1));
 
     }
 
@@ -50,7 +55,7 @@ public class Snake {
         return header;
     }
 
-    public void setFood(Point point) {
+    public void setFood(PointF point) {
         this.foodPosition = point;
     }
 
@@ -61,8 +66,10 @@ public class Snake {
     public void addNode(Node node) {
         node.direction = tail.direction;
         tail.next = node;
+        tail.clearMark();
         node.pre = tail;
         tail = node;
+        tail.setMark(MARK_TAIL);
     }
 
     public void move(int direction) {
@@ -99,10 +106,10 @@ public class Snake {
             turnNodes.add(new Node(header.x, header.y, header.direction));
         }
 
-        if (!isOutBorder() && !isEatSelf()) {
+        if (!isOutBorder(newDirection) && !isEatSelf()) {
             for (Node node = header; node != null; node = node.next) {
 
-                if (header.x == foodPosition.x && header.y == foodPosition.y) {
+                if (Math.abs(header.x - foodPosition.x) < 1 && Math.abs(header.y - foodPosition.y) < 1) {
                     isEatFood = true;
                     SnakeView.setInitFood(false);
                 }
@@ -143,15 +150,27 @@ public class Snake {
         turnNodes.remove(dirtyNode);
     }
 
-    public boolean isOutBorder() {
-        if (header.x < walkGround.left
-                || header.x > walkGround.right
-                || header.y < walkGround.top
-                || header.y > walkGround.bottom) {
-            return true;
-        } else {
-            return false;
+    public boolean isOutBorder(int direction) {
+        switch (direction) {
+            case Direction.LEFT:
+                return header.x - STEP < walkGround.left;
+            case Direction.RIGHT:
+                return header.x + STEP > walkGround.right;
+            case Direction.TOP:
+                return header.y - STEP < walkGround.top;
+            case Direction.BOTTOM:
+                return header.y + STEP > walkGround.bottom;
+            default:
+                return false;
         }
+//        if (header.x < walkGround.left
+//                || header.x > walkGround.right
+//                || header.y < walkGround.top
+//                || header.y > walkGround.bottom) {
+//            return true;
+//        } else {
+//            return false;
+//        }
     }
 
     public boolean isEatSelf() {
@@ -175,10 +194,24 @@ public class Snake {
         Node next;
         int direction;
 
+        int mark = -1;
+
         public Node(float x, float y, int direction) {
             this.x = x;
             this.y = y;
             this.direction = direction;
+        }
+
+        public int getMark() {
+            return mark;
+        }
+
+        public void setMark(int mark) {
+            this.mark = mark;
+        }
+
+        public void clearMark() {
+            mark = -1;
         }
 
         public float getLeft() {

@@ -1,8 +1,12 @@
 package xh.snake;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.PointF;
+import android.graphics.Rect;
+import android.graphics.RectF;
 
 import java.util.Random;
 
@@ -12,37 +16,42 @@ import java.util.Random;
 
 public class Food {
     private static final Random random = new Random(48);
-    int left;
-    int right;
-    int top;
-    int bottom;
-    Point position;
+    PointF position;
+    RectF foodRect;
 
     public Food() {
-        position = new Point();
+        position = new PointF();
+        foodRect = new RectF();
     }
 
-    public void init(Snake snake, int borderWidth, int borderHeight) {
+    public void init(Snake snake, int rightBorder, int bottomBorder, int border) {
         int step = (int) Snake.STEP;
-        int x = random.nextInt(borderWidth);
-        int y = random.nextInt(borderHeight);
-        x -= x % step;
-        y -= y % step;
+        int xRand = random.nextInt(rightBorder);
+        int yRand = random.nextInt(bottomBorder);
+
+        xRand -= xRand % step;
+        yRand -= yRand % step;
+
+        float x = border + step / 2 + xRand;
+        float y = border + step / 2 + yRand;
+
+
         for (Snake.Node node = snake.getHeader(); node != null; node = node.next) {
             if (x == node.x && y == node.y) {
-                init(snake, borderWidth, borderHeight);
+                init(snake, rightBorder, bottomBorder, border);
                 return;
             }
         }
         position.set(x, y);
         snake.setFood(position);
-        left = x - step / 2 + Snake.PADDING;
-        right = x + step / 2 - Snake.PADDING;
-        top = y - step / 2 + Snake.PADDING;
-        bottom = y + step / 2 - Snake.PADDING;
+        float left = x - step / 2 + Snake.PADDING;
+        float right = x + step / 2 - Snake.PADDING;
+        float top = y - step / 2 + Snake.PADDING;
+        float bottom = y + step / 2 - Snake.PADDING;
+        foodRect.set(left, top, right, bottom);
     }
 
-    public void draw(Canvas canvas, Paint paint) {
-        canvas.drawRect(left, top, right, bottom, paint);
+    public void draw(Canvas canvas, Paint paint, Bitmap bitmap) {
+        canvas.drawBitmap(bitmap, foodRect.left, foodRect.top, paint);
     }
 }

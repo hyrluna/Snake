@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements ControllerView.On
 
         @Override
         protected void onPreExecute() {
-            mSnake = new Snake();
+            mSnake = new Snake(mSnakeView.getmBorderWidth());
             mSnakeView.setSnake(mSnake);
             mDirection = Snake.Direction.TOP;
             mOldDirection = mDirection;
