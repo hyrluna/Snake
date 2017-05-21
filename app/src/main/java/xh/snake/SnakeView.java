@@ -48,6 +48,7 @@ public class SnakeView extends View{
     private Paint mSnakeHeadPaint;
     private Paint mSnakeTailPaint;
     private Paint mFoodPaint;
+    private Paint mRedundantPaint;
     Matrix matrix;
 
     public SnakeView(Context context) {
@@ -92,6 +93,9 @@ public class SnakeView extends View{
 
         mFoodPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mFoodPaint.setColor(Color.GREEN);
+
+        mRedundantPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mRedundantPaint.setColor(context.getResources().getColor(android.R.color.holo_green_dark));
 
         mSnake = new Snake(mBorderWidth);
         mFood = new Food();
@@ -138,7 +142,7 @@ public class SnakeView extends View{
         float outLeft = getLeft();
         float outRight = getRight();
         float outTop = getTop();
-        float outBottom = getBottom();
+        float outBottom = getBottom() - getBottom() % Snake.STEP;
         float inLeft = outLeft + mBorderWidth;
         float inRight = outRight - mBorderWidth;
         float inTop = outTop + mBorderWidth;
@@ -147,6 +151,7 @@ public class SnakeView extends View{
         mSnake.setWalkGround(mWalkGround);
 
         canvas.drawRect(outLeft, outTop, outRight, outBottom, mBorderPaint);
+        canvas.drawRect(outLeft, outBottom, outRight, outBottom + getBottom() % Snake.STEP, mRedundantPaint);
 //        mBorderPaint.setColor(Color.WHITE);
 //        canvas.drawRect(inLeft, inTop, inRight, inBottom, mBorderPaint);
 
