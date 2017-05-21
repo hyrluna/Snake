@@ -17,28 +17,50 @@ import android.view.View;
 public class ScorePanel extends View {
 
     String scoreText;
+    String valueText;
     private Rect bounds = new Rect();
 
     Paint mScorePaint;
+    Paint mValuePaint;
 
     public ScorePanel(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
-        scoreText = "Score";
+        scoreText = "Score: ";
         float scoreSize = getContext().getResources().getDimensionPixelSize(R.dimen.score_title);
         mScorePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mScorePaint.setTextSize(scoreSize);
-        mScorePaint.setColor(Color.RED);
+        mScorePaint.setColor(Color.WHITE);
         mScorePaint.setTextAlign(Paint.Align.LEFT);
         mScorePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+
+        valueText = "0";
+        mValuePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mValuePaint.setTextSize(scoreSize);
+        mValuePaint.setColor(Color.WHITE);
+        mValuePaint.setTextAlign(Paint.Align.CENTER);
+        mValuePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.ITALIC));
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         mScorePaint.getTextBounds(scoreText, 0, scoreText.length(), bounds);
-        float y = getPaddingTop() + bounds.height();
+        //文字居中
+        float y = (getPaddingTop() + getPaddingBottom() + getHeight() - bounds.height()) / 2 + bounds.height();
+        float x = 50;
+        canvas.drawText(scoreText, x, y, mScorePaint);
+//        bounds.setEmpty();
+        float xValue = getPaddingStart() + x + bounds.width() + 65;
+        mValuePaint.getTextBounds(valueText, 0, valueText.length(), bounds);
+        canvas.drawText(valueText, xValue, y, mValuePaint);
+    }
 
-        canvas.drawText(scoreText, 0, y, mScorePaint);
+    public String getScore() {
+        return valueText;
+    }
+
+    public void setScore(String valueText) {
+        this.valueText = valueText;
     }
 }

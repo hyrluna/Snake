@@ -24,6 +24,10 @@ public class Snake {
     private Node header;
     private Node tail;
     private SnakeView.WalkGround walkGround;
+    private ScorePanel scorePanel;
+    private int score = 0;
+    private int speed = 0;
+
     private PointF foodPosition;
     private boolean isAlive = true;
 
@@ -43,11 +47,11 @@ public class Snake {
         tail.setMark(MARK_TAIL);
         body1.next = tail;
         tail.pre = body1;
-        addNode(new Node(x, y + NODE_SIZE + NODE_SIZE, -1));
+//        addNode(new Node(x, y + NODE_SIZE*2, -1));
         addNode(new Node(x, y + NODE_SIZE*3, -1));
-        addNode(new Node(x, y + NODE_SIZE*4, -1));
-        addNode(new Node(x, y + NODE_SIZE*5, -1));
-        addNode(new Node(x, y + NODE_SIZE*6, -1));
+//        addNode(new Node(x, y + NODE_SIZE*4, -1));
+//        addNode(new Node(x, y + NODE_SIZE*5, -1));
+//        addNode(new Node(x, y + NODE_SIZE*6, -1));
 
     }
 
@@ -57,6 +61,10 @@ public class Snake {
 
     public void setFood(PointF point) {
         this.foodPosition = point;
+    }
+
+    public void setScorePanel(ScorePanel scorePanel) {
+        this.scorePanel = scorePanel;
     }
 
     public boolean isAlive() {
@@ -143,6 +151,10 @@ public class Snake {
 
         if (isEatFood) {
             isEatFood = false;
+            score += 10;
+            speed += 5;
+            scorePanel.setScore(score + "");
+            scorePanel.postInvalidate();
             addNode(oldTailNode);
         }
 
@@ -180,6 +192,10 @@ public class Snake {
             }
         }
         return false;
+    }
+
+    public int getSpeed() {
+        return speed;
     }
 
     public void setWalkGround(SnakeView.WalkGround walkGround) {

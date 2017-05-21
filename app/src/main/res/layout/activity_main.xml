@@ -10,18 +10,21 @@
     <xh.snake.SnakeView
         android:id="@+id/snake_view"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="420dp"
         app:borderWidth="0dp"/>
 
     <xh.snake.ScorePanel
+        android:id="@+id/score_panel"
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:background="@android:color/darker_gray"/>
+        android:background="@android:color/holo_green_dark"/>
 
     <xh.snake.ControllerView
         android:id="@+id/controller_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/holo_green_dark"/>
     
     <!--<RelativeLayout-->
         <!--android:id="@+id/controller"-->

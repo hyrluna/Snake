@@ -2,6 +2,6 @@
 <resources>
     <dimen name="score_plane_width">100dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="controller_radius">30dp</dimen>
-    <dimen name="score_title">16sp</dimen>
+    <dimen name="controller_radius">40dp</dimen>
+    <dimen name="score_title">20sp</dimen>
 </resources>

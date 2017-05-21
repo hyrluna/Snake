@@ -69,8 +69,8 @@ public class ControllerView extends ViewGroup {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int wrapWidth = radius * 10;
-        int wrapHeight = radius * 7;
+        int wrapWidth = radius * 8;
+        int wrapHeight = radius * 6;
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
@@ -102,14 +102,14 @@ public class ControllerView extends ViewGroup {
         super.onSizeChanged(w, h, oldw, oldh);
         int centerX = w / 2;
         int centerY = h / 2;
-        int btnLeftX = centerX - radius * 2 - radius;
+        int btnLeftX = centerX - radius * 2;
         int btnLeftY = centerY;
-        int btnRightX = centerX + radius * 2 + radius;
+        int btnRightX = centerX + radius * 2;
         int btnRightY = centerY;
         int btnTopX = centerX;
-        int btnTopY = centerY - radius * 2 + radius / 4;
+        int btnTopY = centerY - radius * 2 + radius / 2;
         int btnBottomX = centerX;
-        int btnBottomY = centerY + radius * 2 - radius / 4;
+        int btnBottomY = centerY + radius * 2 - radius / 2;
         buttonLayout(btnLeft, btnLeftX, btnLeftY);
         buttonLayout(btnRight, btnRightX, btnRightY);
         buttonLayout(btnTop, btnTopX, btnTopY);
@@ -117,7 +117,8 @@ public class ControllerView extends ViewGroup {
     }
 
     public void buttonLayout(Button btn, int x, int y) {
-        btn.layout(x - radius, y - radius, x + radius, y + radius);
+        int r = radius;
+        btn.layout(x - r, y - r, x + r, y + r);
     }
 
     public void setOnBtnClickListener(final OnBtnClickListener listener) {

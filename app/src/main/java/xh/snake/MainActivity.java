@@ -1,7 +1,7 @@
 package xh.snake;
 
+import android.app.ActionBar;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -10,11 +10,12 @@ import android.view.View;
 
 public class MainActivity extends AppCompatActivity implements ControllerView.OnBtnClickListener {
 
-    private static final int SPEED = 50;
+    private static final int SPEED = 60;
     private static final int REFRESH_FREQUENCY = 10;
 
     private SnakeView mSnakeView;
     private ControllerView mControllerView;
+    private ScorePanel mScorePanel;
     private Snake mSnake;
     private int mDirection;
     private int mOldDirection;
@@ -25,11 +26,24 @@ public class MainActivity extends AppCompatActivity implements ControllerView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+        // Remember that you should never show the action bar if the
+        // status bar is hidden, so hide that too if necessary.
+//        ActionBar actionBar = getActionBar();
+//        actionBar.hide();
+
         mSnakeView = (SnakeView) findViewById(R.id.snake_view);
         mControllerView = (ControllerView) findViewById(R.id.controller_view);
+        mScorePanel = (ScorePanel) findViewById(R.id.score_panel);
         mControllerView.setOnBtnClickListener(this);
-        timeTask = new TimeTask();
-        timeTask.execute();
+        mSnakeView.setScorePanel(mScorePanel);
+        if (timeTask == null) {
+            timeTask = new TimeTask();
+            timeTask.execute();
+        }
     }
 
     @Override
@@ -75,13 +89,22 @@ public class MainActivity extends AppCompatActivity implements ControllerView.On
 //        }
 //    }
 
+    @Override
+    protected void onDestroy() {
+        if (timeTask != null) {
+            timeTask.cancel(false);
+            timeTask = null;
+        }
+        super.onDestroy();
+    }
+
     private class TimeTask extends AsyncTask<Void, Void, Void> {
         int sleepCount = 0;
 
         @Override
         protected void onPreExecute() {
-            mSnake = new Snake(mSnakeView.getmBorderWidth());
-            mSnakeView.setSnake(mSnake);
+            mSnake = mSnakeView.getSnake();
+//            mSnakeView.setSnake(mSnake);
             mDirection = Snake.Direction.TOP;
             mOldDirection = mDirection;
             SnakeView.setInitFood(false);
@@ -99,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements ControllerView.On
             }
 
 
-            while (mSnake.isAlive()) {
+            while (mSnake.isAlive() && !isCancelled()) {
                 try {
                     Thread.sleep(REFRESH_FREQUENCY);
                     sleepCount ++;
@@ -107,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements ControllerView.On
                     e.printStackTrace();
                 }
                 //减少睡眠时间，提高按钮事件的响应速度
-                if (sleepCount == SPEED || mOldDirection != mDirection) {
+                if (sleepCount == SPEED - mSnake.getSpeed() || mOldDirection != mDirection) {
                     sleepCount = 0;
                     mOldDirection = mDirection;
                     mSnake.move(mDirection);
@@ -135,7 +158,8 @@ public class MainActivity extends AppCompatActivity implements ControllerView.On
                 .setPositiveButton("是", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        timeTask.cancel(true);
+                        mSnakeView.reset();
+                        timeTask.cancel(false);
                         timeTask = null;
                         timeTask = new TimeTask();
                         timeTask.execute();

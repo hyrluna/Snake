@@ -21,13 +21,14 @@ public class SnakeView extends View{
     private float mBorderWidth;
     private WalkGround mWalkGround = new WalkGround();
     private Snake mSnake;
+    private ScorePanel mScorePanel;
     private Food mFood;
     boolean isDrawFood;
     static boolean isInitFood;
-    static boolean isCompressed;
+    boolean isCompressed;
 
     Bitmap bitmapWalkGround;
-    Bitmap bitmapWall;
+//    Bitmap bitmapWall;
     Bitmap bitmapFood;
     Bitmap bitmapSnakeHeader;
     Bitmap bitmapSnakeHeaderTop;
@@ -69,7 +70,7 @@ public class SnakeView extends View{
         a.recycle();
 
         bitmapWalkGround = BitmapFactory.decodeResource(getResources(), R.drawable.walk_ground);
-        bitmapWall = BitmapFactory.decodeResource(getResources(), R.drawable.wall);
+//        bitmapWall = BitmapFactory.decodeResource(getResources(), R.drawable.wall);
         bitmapSnakeHeader = BitmapFactory.decodeResource(getResources(), R.drawable.snakehead);
         bitmapSnakeBody = BitmapFactory.decodeResource(getResources(), R.drawable.greenstar);
         bitmapSnakeTail = BitmapFactory.decodeResource(getResources(), R.drawable.tail);
@@ -92,12 +93,18 @@ public class SnakeView extends View{
         mFoodPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mFoodPaint.setColor(Color.GREEN);
 
-//        mSnake = new Snake();
+        mSnake = new Snake(mBorderWidth);
         mFood = new Food();
+        isInitFood = false;
     }
 
-    public void setSnake(Snake snake) {
-        mSnake = snake;
+    public void setScorePanel(ScorePanel panel) {
+        mScorePanel = panel;
+        mSnake.setScorePanel(panel);
+    }
+
+    public Snake getSnake() {
+        return mSnake;
     }
 
     public static void setInitFood(boolean initFood) {
@@ -145,7 +152,7 @@ public class SnakeView extends View{
 
         if (!isCompressed) {
             bitmapWalkGround = Bitmap.createScaledBitmap(bitmapWalkGround, (int) (inRight - inLeft), (int) (inBottom - inTop), true);
-            bitmapWall = Bitmap.createScaledBitmap(bitmapWall, (int) (outRight - outLeft), (int) (outBottom - outTop), true);
+//            bitmapWall = Bitmap.createScaledBitmap(bitmapWall, (int) (outRight - outLeft), (int) (outBottom - outTop), true);
 
             int scaleSize = (int) Snake.STEP - Snake.PADDING;
             Bitmap scaleHeader = Bitmap.createScaledBitmap(bitmapSnakeHeader, scaleSize, scaleSize, true);
@@ -222,8 +229,17 @@ public class SnakeView extends View{
         }
     }
 
-    public float getmBorderWidth() {
+    public float getBorderWidth() {
         return mBorderWidth;
+    }
+
+    public void reset() {
+        mSnake = null;
+        mFood = null;
+        mSnake = new Snake(mBorderWidth);
+        mSnake.setScorePanel(mScorePanel);
+        mFood = new Food();
+        isInitFood = false;
     }
 
     public class WalkGround {
